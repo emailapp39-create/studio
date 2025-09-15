@@ -25,6 +25,16 @@ export default function DashboardClient() {
     });
   };
 
+  const editTransaction = (updatedTransaction: Transaction) => {
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === updatedTransaction.id ? updatedTransaction : t))
+    );
+    toast({
+      title: 'Transaction Updated',
+      description: `Successfully updated "${updatedTransaction.description}".`,
+    });
+  };
+
   const deleteTransaction = (id: string) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
     toast({
@@ -44,6 +54,7 @@ export default function DashboardClient() {
           <div className="xl:col-span-1">
             <TransactionsTable
               transactions={transactions}
+              editTransaction={editTransaction}
               deleteTransaction={deleteTransaction}
             />
           </div>
