@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {CATEGORIES} from '@/lib/data';
 import {z} from 'genkit';
 
 const SuggestCategoryInputSchema = z.object({
@@ -46,7 +47,7 @@ Description: {{{description}}}
 
 Respond with only a valid JSON document conforming to the schema.  Be brief and concise.  The confidence should represent your certainty that you have categorized it correctly.
 
-Available categories: Groceries, Rent, Salary, Utilities, Entertainment, Transportation, Shopping, Dining, Travel, Healthcare, Education, Personal Care, Investments, Bills, Fees, Taxes, Other
+Available categories: ${CATEGORIES.join(', ')}
 `,
   config: {
     safetySettings: [

@@ -1,5 +1,8 @@
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
 import AddTransactionSheet from './add-transaction-sheet';
 import type { Transaction } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 
 interface DashboardHeaderProps {
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
@@ -11,8 +14,8 @@ export default function DashboardHeader({
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <a
-          href="#"
+        <Link
+          href="/"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
           <svg
@@ -30,10 +33,21 @@ export default function DashboardHeader({
             <path d="m14 15.5-4-4" />
           </svg>
           <span className="font-headline text-xl">ProfitView</span>
-        </a>
+        </Link>
+        <Link
+          href="/settings"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Settings
+        </Link>
       </nav>
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <AddTransactionSheet addTransaction={addTransaction} />
+        <Link href="/settings" className="md:hidden">
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
+        </Link>
       </div>
     </header>
   );

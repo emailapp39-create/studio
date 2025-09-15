@@ -7,7 +7,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import {
   Table,
@@ -24,20 +23,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Transaction, Category } from '@/lib/types';
-import { CATEGORIES, categoryIcons } from '@/lib/data';
+import { useCategories } from '@/hooks/use-categories';
 import { formatCurrency, cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
+  deleteTransaction: (id: string) => void;
 }
 
 export default function TransactionsTable({
   transactions,
+  deleteTransaction,
 }: TransactionsTableProps) {
   const [categoryFilter, setCategoryFilter] = useState<Category | 'all'>('all');
+  const { categories, categoryIcons } = useCategories();
 
   const filteredTransactions = useMemo(() => {
     return transactions
@@ -73,7 +83,7 @@ export default function TransactionsTable({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
                 </SelectItem>
@@ -91,6 +101,9 @@ export default function TransactionsTable({
                 <TableHead>Category</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -120,11 +133,29 @@ export default function TransactionsTable({
                       {transaction.type === 'income' ? '+' : '-'}
                       {formatCurrency(transaction.amount)}
                     </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem
+                            onClick={() => deleteTransaction(transaction.id)}
+                            className="text-red-600 focus:text-red-700 focus:bg-red-50"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     No transactions found.
                   </TableCell>
                 </TableRow>

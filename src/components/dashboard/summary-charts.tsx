@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/chart';
 import type { Transaction } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
-import { CATEGORIES } from '@/lib/data';
+import { useCategories } from '@/hooks/use-categories';
 
 interface SummaryChartsProps {
   transactions: Transaction[];
@@ -40,7 +40,8 @@ const COLORS = [
 ];
 
 export default function SummaryCharts({ transactions }: SummaryChartsProps) {
-  const { barChartData, pieChartData, totalExpenses } = useMemo(() => {
+  const { categories } = useCategories();
+  const { barChartData, pieChartData } = useMemo(() => {
     const income = transactions
       .filter((t) => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0);
@@ -67,7 +68,6 @@ export default function SummaryCharts({ transactions }: SummaryChartsProps) {
         name,
         value,
       })),
-      totalExpenses: expenses,
     };
   }, [transactions]);
 
@@ -81,7 +81,7 @@ export default function SummaryCharts({ transactions }: SummaryChartsProps) {
     value: {
       label: 'Amount',
     },
-    ...CATEGORIES.reduce((acc, category) => {
+    ...categories.reduce((acc, category) => {
       acc[category] = { label: category };
       return acc;
     }, {} as any),

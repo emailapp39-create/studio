@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import type { Transaction } from '@/lib/types';
 import { INITIAL_TRANSACTIONS } from '@/lib/data';
-import DashboardHeader from '@/components/dashboard/header';
 import SummaryCards from '@/components/dashboard/summary-cards';
 import SummaryCharts from '@/components/dashboard/summary-charts';
 import TransactionsTable from '@/components/dashboard/transactions-table';
 import { useToast } from '@/hooks/use-toast';
+import DashboardLayout from './dashboard-layout';
 
 export default function DashboardClient() {
   const [transactions, setTransactions] =
@@ -25,9 +25,16 @@ export default function DashboardClient() {
     });
   };
 
+  const deleteTransaction = (id: string) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    toast({
+      title: 'Transaction Deleted',
+      description: 'The transaction has been successfully deleted.',
+    });
+  };
+
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <DashboardHeader addTransaction={addTransaction} />
+    <DashboardLayout addTransaction={addTransaction}>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <SummaryCards transactions={transactions} />
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
@@ -35,10 +42,13 @@ export default function DashboardClient() {
             <SummaryCharts transactions={transactions} />
           </div>
           <div className="xl:col-span-1">
-            <TransactionsTable transactions={transactions} />
+            <TransactionsTable
+              transactions={transactions}
+              deleteTransaction={deleteTransaction}
+            />
           </div>
         </div>
       </main>
-    </div>
+    </DashboardLayout>
   );
 }

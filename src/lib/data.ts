@@ -39,9 +39,9 @@ export const CATEGORIES = [
   'Fees',
   'Taxes',
   'Other',
-] as const;
+];
 
-export const categoryIcons: Record<(typeof CATEGORIES)[number], LucideIcon> = {
+export const categoryIcons: Record<string, LucideIcon> = {
   Groceries: ShoppingCart,
   Rent: Home,
   Salary: Briefcase,

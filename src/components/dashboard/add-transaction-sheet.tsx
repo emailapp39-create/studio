@@ -43,10 +43,10 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
-import { CATEGORIES } from '@/lib/data';
 import type { Transaction } from '@/lib/types';
 import { suggestCategory } from '@/ai/flows/smart-category-suggestion';
 import { useToast } from '@/hooks/use-toast';
+import { useCategories } from '@/hooks/use-categories';
 
 const formSchema = z.object({
   date: z.date({
@@ -57,7 +57,7 @@ const formSchema = z.object({
   type: z.enum(['income', 'expense'], {
     required_error: 'You need to select a transaction type.',
   }),
-  category: z.enum(CATEGORIES, {
+  category: z.string({
     required_error: 'Please select a category.',
   }),
 });
@@ -74,6 +74,7 @@ export default function AddTransactionSheet({
   const [open, setOpen] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const { toast } = useToast();
+  const { categories } = useCategories();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -120,6 +121,7 @@ export default function AddTransactionSheet({
     addTransaction({
       ...values,
       date: values.date.toISOString(),
+      category: values.category as any,
     });
     form.reset();
     setOpen(false);
@@ -170,7 +172,7 @@ export default function AddTransactionSheet({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {CATEGORIES.map((category) => (
+                        {categories.map((category) => (
                           <SelectItem key={category} value={category}>
                             {category}
                           </SelectItem>
