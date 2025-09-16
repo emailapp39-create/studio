@@ -104,7 +104,7 @@ export default function CurrencyConverterClient() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="relative h-[calc(100vh-20rem)]">
+              <div className="relative h-[calc(100vh-15rem)]">
                 <div className="absolute top-0 right-0 z-10 flex flex-col gap-2">
                   <Button variant="outline" size="icon" onClick={() => scroll('up')}>
                     <ArrowUp className="h-4 w-4" />
