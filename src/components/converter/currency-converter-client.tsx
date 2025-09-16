@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ArrowRightLeft, Loader2 } from 'lucide-react';
+import { ArrowRightLeft, Loader2, ArrowUp, ArrowDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +35,7 @@ import { convertCurrency } from '@/ai/flows/currency-converter-flow';
 import { CURRENCIES } from '@/lib/currencies';
 import DashboardLayout from '../dashboard/dashboard-layout';
 import { formatCurrency } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
   amount: z.coerce.number().positive('Amount must be a positive number.'),
@@ -51,6 +52,7 @@ export default function CurrencyConverterClient() {
     currency: string;
   } | null>(null);
   const { toast } = useToast();
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,6 +62,17 @@ export default function CurrencyConverterClient() {
       to: 'EUR',
     },
   });
+
+  const scroll = (direction: 'up' | 'down') => {
+    if (scrollViewportRef.current) {
+      const { scrollTop } = scrollViewportRef.current;
+      const scrollAmount = direction === 'up' ? -100 : 100;
+      scrollViewportRef.current.scrollTo({
+        top: scrollTop + scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   async function onSubmit(values: FormValues) {
     setIsConverting(true);
@@ -91,120 +104,132 @@ export default function CurrencyConverterClient() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto_1fr] items-end">
-                    <FormField
-                      control={form.control}
-                      name="from"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>From</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CURRENCIES.map((currency) => (
-                                <SelectItem
-                                  key={currency.code}
-                                  value={currency.code}
-                                >
-                                  {currency.code} - {currency.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        const from = form.getValues('from');
-                        const to = form.getValues('to');
-                        form.setValue('from', to);
-                        form.setValue('to', from);
-                      }}
-                    >
-                      <ArrowRightLeft className="h-5 w-5 text-muted-foreground" />
-                    </Button>
-                    <FormField
-                      control={form.control}
-                      name="to"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>To</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CURRENCIES.map((currency) => (
-                                <SelectItem
-                                  key={currency.code}
-                                  value={currency.code}
-                                >
-                                  {currency.code} - {currency.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Amount</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="1.00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button type="submit" className="w-full" disabled={isConverting}>
-                    {isConverting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      'Convert'
-                    )}
+              <div className="relative h-[calc(100vh-20rem)]">
+                <div className="absolute top-0 right-0 z-10 flex flex-col gap-2">
+                  <Button variant="outline" size="icon" onClick={() => scroll('up')}>
+                    <ArrowUp className="h-4 w-4" />
                   </Button>
-                </form>
-              </Form>
-
-              {conversionResult && (
-                <div className="mt-6 text-center">
-                  <p className="text-muted-foreground">
-                    {formatCurrency(form.getValues('amount'), form.getValues('from'))} is
-                  </p>
-                  <p className="text-3xl font-bold">
-                    {formatCurrency(conversionResult.amount, conversionResult.currency)}
-                  </p>
+                  <Button variant="outline" size="icon" onClick={() => scroll('down')}>
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
                 </div>
-              )}
+                <ScrollArea className="h-full pr-12" viewportRef={scrollViewportRef}>
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-6"
+                    >
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto_1fr] items-end">
+                        <FormField
+                          control={form.control}
+                          name="from"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>From</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a currency" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {CURRENCIES.map((currency) => (
+                                    <SelectItem
+                                      key={currency.code}
+                                      value={currency.code}
+                                    >
+                                      {currency.code} - {currency.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const from = form.getValues('from');
+                            const to = form.getValues('to');
+                            form.setValue('from', to);
+                            form.setValue('to', from);
+                          }}
+                        >
+                          <ArrowRightLeft className="h-5 w-5 text-muted-foreground" />
+                        </Button>
+                        <FormField
+                          control={form.control}
+                          name="to"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>To</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a currency" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {CURRENCIES.map((currency) => (
+                                    <SelectItem
+                                      key={currency.code}
+                                      value={currency.code}
+                                    >
+                                      {currency.code} - {currency.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="amount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Amount</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="1.00" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button type="submit" className="w-full" disabled={isConverting}>
+                        {isConverting ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          'Convert'
+                        )}
+                      </Button>
+                    </form>
+                  </Form>
+
+                  {conversionResult && (
+                    <div className="mt-6 text-center">
+                      <p className="text-muted-foreground">
+                        {formatCurrency(form.getValues('amount'), form.getValues('from'))} is
+                      </p>
+                      <p className="text-3xl font-bold">
+                        {formatCurrency(conversionResult.amount, conversionResult.currency)}
+                      </p>
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
             </CardContent>
           </Card>
         </div>
