@@ -25,6 +25,31 @@ const ConvertCurrencyOutputSchema = z.object({
 });
 export type ConvertCurrencyOutput = z.infer<typeof ConvertCurrencyOutputSchema>;
 
+// A tool to get the exchange rate. In a real app, this would call an API.
+// For this example, we'll simulate it with a random number.
+const getExchangeRate = ai.defineTool(
+  {
+    name: 'getExchangeRate',
+    description:
+      'Get the exchange rate between two currencies. This is a fictional API and will return a random number.',
+    inputSchema: z.object({
+      from: z.string().describe('The currency to convert from (e.g., USD).'),
+      to: z.string().describe('The currency to convert to (e.g., EUR).'),
+    }),
+    outputSchema: z.number(),
+  },
+  async (input) => {
+    console.log(`Getting exchange rate from ${input.from} to ${input.to}`);
+    // In a real application, you would call a currency API here.
+    // For this example, we'll return a random rate.
+    if (input.from === input.to) {
+      return 1;
+    }
+    return Math.random() * 2;
+  }
+);
+
+
 export async function convertCurrency(
   input: ConvertCurrencyInput
 ): Promise<ConvertCurrencyOutput> {
@@ -35,7 +60,9 @@ const prompt = ai.definePrompt({
   name: 'convertCurrencyPrompt',
   input: { schema: ConvertCurrencyInputSchema },
   output: { schema: ConvertCurrencyOutputSchema },
-  prompt: `You are a currency converter. Convert the given amount from the source currency to the target currency based on the latest available exchange rates.
+  tools: [getExchangeRate],
+  prompt: `You are a currency converter. Convert the given amount from the source currency to the target currency.
+Use the getExchangeRate tool to get the exchange rate.
 
 Amount: {{{amount}}}
 From: {{{from}}}
