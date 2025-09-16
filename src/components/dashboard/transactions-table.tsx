@@ -35,18 +35,22 @@ import type { Transaction, Category } from '@/lib/types';
 import { useCategories } from '@/hooks/use-categories';
 import { formatCurrency, cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Trash2, Pencil } from 'lucide-react';
+import EditTransactionSheet from './edit-transaction-sheet';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
   deleteTransaction: (id: string) => void;
+  onTransactionUpdate: (transaction: Transaction) => void;
 }
 
 export default function TransactionsTable({
   transactions,
   deleteTransaction,
+  onTransactionUpdate,
 }: TransactionsTableProps) {
   const [categoryFilter, setCategoryFilter] = useState<Category | 'all'>('all');
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const { categories, categoryIcons } = useCategories();
 
   const filteredTransactions = useMemo(() => {
@@ -60,6 +64,15 @@ export default function TransactionsTable({
   const Icon = ({ category }: { category: Category }) => {
     const IconComponent = categoryIcons[category];
     return IconComponent ? <IconComponent className="h-4 w-4" /> : null;
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleUpdate = (updatedTransaction: Transaction) => {
+    onTransactionUpdate(updatedTransaction);
+    setEditingTransaction(null);
   };
 
   return (
@@ -143,6 +156,12 @@ export default function TransactionsTable({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem
+                              onClick={() => handleEdit(transaction)}
+                            >
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               onClick={() => deleteTransaction(transaction.id)}
                               className="text-red-600 focus:text-red-700 focus:bg-red-50"
                             >
@@ -166,6 +185,13 @@ export default function TransactionsTable({
           </div>
         </CardContent>
       </Card>
+      {editingTransaction && (
+        <EditTransactionSheet
+          transaction={editingTransaction}
+          onUpdate={handleUpdate}
+          onClose={() => setEditingTransaction(null)}
+        />
+      )}
     </>
   );
 }

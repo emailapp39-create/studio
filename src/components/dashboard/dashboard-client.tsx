@@ -33,6 +33,18 @@ export default function DashboardClient() {
     });
   };
 
+  const editTransaction = (updatedTransaction: Transaction) => {
+    setTransactions((prev) =>
+      prev.map((t) =>
+        t.id === updatedTransaction.id ? updatedTransaction : t
+      )
+    );
+    toast({
+      title: 'Transaction Updated',
+      description: 'The transaction has been successfully updated.',
+    });
+  };
+
   return (
     <DashboardLayout addTransaction={addTransaction}>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -45,6 +57,7 @@ export default function DashboardClient() {
             <TransactionsTable
               transactions={transactions}
               deleteTransaction={deleteTransaction}
+              onTransactionUpdate={editTransaction}
             />
           </div>
         </div>
