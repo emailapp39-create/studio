@@ -35,24 +35,18 @@ import type { Transaction, Category } from '@/lib/types';
 import { useCategories } from '@/hooks/use-categories';
 import { formatCurrency, cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { MoreHorizontal, Trash2, Pencil } from 'lucide-react';
-import EditTransactionSheet from './edit-transaction-sheet';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
-  editTransaction: (transaction: Transaction) => void;
   deleteTransaction: (id: string) => void;
 }
 
 export default function TransactionsTable({
   transactions,
-  editTransaction,
   deleteTransaction,
 }: TransactionsTableProps) {
   const [categoryFilter, setCategoryFilter] = useState<Category | 'all'>('all');
-  const [editingTransaction, setEditingTransaction] = useState<
-    Transaction | undefined
-  >(undefined);
   const { categories, categoryIcons } = useCategories();
 
   const filteredTransactions = useMemo(() => {
@@ -149,12 +143,6 @@ export default function TransactionsTable({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem
-                              onClick={() => setEditingTransaction(transaction)}
-                            >
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
                               onClick={() => deleteTransaction(transaction.id)}
                               className="text-red-600 focus:text-red-700 focus:bg-red-50"
                             >
@@ -178,14 +166,6 @@ export default function TransactionsTable({
           </div>
         </CardContent>
       </Card>
-      {editingTransaction && (
-        <EditTransactionSheet
-          transaction={editingTransaction}
-          editTransaction={editTransaction}
-          open={!!editingTransaction}
-          onOpenChange={(open) => !open && setEditingTransaction(undefined)}
-        />
-      )}
     </>
   );
 }

@@ -278,7 +278,7 @@ export default function AddTransactionSheet({
               <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
               </SheetClose>
-              <Button type="submit">Save Transaction</Button>
+              <Button type="submit">Save Changes</Button>
             </SheetFooter>
           </form>
         </Form>
