@@ -35,6 +35,12 @@ export default function DashboardHeader({
           <span className="font-headline text-xl">ProfitView</span>
         </Link>
         <Link
+          href="/converter"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Converter
+        </Link>
+        <Link
           href="/settings"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
