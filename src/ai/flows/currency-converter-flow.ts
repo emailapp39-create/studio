@@ -61,8 +61,13 @@ const prompt = ai.definePrompt({
   input: { schema: ConvertCurrencyInputSchema },
   output: { schema: ConvertCurrencyOutputSchema },
   tools: [getExchangeRate],
-  prompt: `You are a currency converter. Convert the given amount from the source currency to the target currency.
-Use the getExchangeRate tool to get the exchange rate.
+  prompt: `You are a currency converter. Your task is to convert the given amount from the source currency to the target currency.
+
+You MUST use the 'getExchangeRate' tool to obtain the exchange rate. Do not try to guess or use your own knowledge.
+
+1. Call the 'getExchangeRate' tool with the 'from' and 'to' currencies.
+2. Take the returned exchange rate and multiply it by the 'amount' to get the converted amount.
+3. Return the result in the 'convertedAmount' field.
 
 Amount: {{{amount}}}
 From: {{{from}}}
