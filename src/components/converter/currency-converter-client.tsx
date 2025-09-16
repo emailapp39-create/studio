@@ -23,13 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Combobox } from '@/components/ui/combobox';
 import { useToast } from '@/hooks/use-toast';
 import { convertCurrency } from '@/ai/flows/currency-converter-flow';
 import { CURRENCIES } from '@/lib/currencies';
@@ -92,6 +86,11 @@ export default function CurrencyConverterClient() {
     }
   }
 
+  const currencyOptions = CURRENCIES.map((currency) => ({
+    value: currency.code,
+    label: `${currency.code} - ${currency.name}`,
+  }));
+
   return (
     <DashboardLayout>
       <main className="flex-1 p-4 md:p-8">
@@ -104,7 +103,7 @@ export default function CurrencyConverterClient() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="relative h-[calc(100vh-15rem)]">
+              <div className="relative h-[calc(100vh-12rem)]">
                 <div className="absolute top-0 right-0 z-10 flex flex-col gap-2">
                   <Button variant="outline" size="icon" onClick={() => scroll('up')}>
                     <ArrowUp className="h-4 w-4" />
@@ -124,28 +123,15 @@ export default function CurrencyConverterClient() {
                           control={form.control}
                           name="from"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col">
                               <FormLabel>From</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a currency" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {CURRENCIES.map((currency) => (
-                                    <SelectItem
-                                      key={currency.code}
-                                      value={currency.code}
-                                    >
-                                      {currency.code} - {currency.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={currencyOptions}
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select currency..."
+                                searchPlaceholder="Search currency..."
+                              />
                               <FormMessage />
                             </FormItem>
                           )}
@@ -167,28 +153,15 @@ export default function CurrencyConverterClient() {
                           control={form.control}
                           name="to"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex flex-col">
                               <FormLabel>To</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a currency" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {CURRENCIES.map((currency) => (
-                                    <SelectItem
-                                      key={currency.code}
-                                      value={currency.code}
-                                    >
-                                      {currency.code} - {currency.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={currencyOptions}
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select currency..."
+                                searchPlaceholder="Search currency..."
+                              />
                               <FormMessage />
                             </FormItem>
                           )}
