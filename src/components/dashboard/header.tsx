@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Settings } from 'lucide-react';
+import { Settings, ArrowRightLeft } from 'lucide-react';
 import AddTransactionSheet from './add-transaction-sheet';
 import type { Transaction } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+      <nav className="flex w-full flex-row items-center gap-5 text-sm font-medium">
         <Link
           href="/"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
@@ -47,7 +47,7 @@ export default function DashboardHeader({
           Settings
         </Link>
       </nav>
-      <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
+      <div className="flex items-center justify-end gap-2">
         <AddTransactionSheet addTransaction={addTransaction} />
         <Link href="/settings" className="md:hidden">
           <Button variant="ghost" size="icon">
