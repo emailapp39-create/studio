@@ -128,7 +128,9 @@ export default function CurrencyConverterClient() {
                               <Combobox
                                 options={currencyOptions}
                                 value={field.value}
-                                onChange={(value) => field.onChange(value)}
+                                onChange={(value) => {
+                                  form.setValue('from', value);
+                                }}
                                 placeholder="Select currency..."
                                 searchPlaceholder="Search currency..."
                               />
@@ -158,7 +160,9 @@ export default function CurrencyConverterClient() {
                               <Combobox
                                 options={currencyOptions}
                                 value={field.value}
-                                onChange={(value) => field.onChange(value)}
+                                onChange={(value) => {
+                                  form.setValue('to', value);
+                                }}
                                 placeholder="Select currency..."
                                 searchPlaceholder="Search currency..."
                               />
