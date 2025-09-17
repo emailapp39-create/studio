@@ -185,6 +185,17 @@ export default function CurrencyConverterClient() {
                         )}
                       />
 
+                      {conversionResult && (
+                        <div className="mt-2 rounded-lg border bg-card text-card-foreground p-6 text-center shadow-sm">
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(form.getValues('amount'), form.getValues('from'))} is equal to
+                          </p>
+                          <p className="text-3xl font-bold text-primary">
+                            {formatCurrency(conversionResult.amount, conversionResult.currency)}
+                          </p>
+                        </div>
+                      )}
+
                       <Button type="submit" className="w-full" disabled={isConverting}>
                         {isConverting ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -194,17 +205,6 @@ export default function CurrencyConverterClient() {
                       </Button>
                     </form>
                   </Form>
-
-                  {conversionResult && (
-                    <div className="mt-8 rounded-lg border bg-card text-card-foreground p-6 text-center shadow-sm">
-                      <p className="text-sm text-muted-foreground">
-                        {formatCurrency(form.getValues('amount'), form.getValues('from'))} is equal to
-                      </p>
-                      <p className="text-3xl font-bold text-primary">
-                        {formatCurrency(conversionResult.amount, conversionResult.currency)}
-                      </p>
-                    </div>
-                  )}
                 </ScrollArea>
               </div>
             </CardContent>
