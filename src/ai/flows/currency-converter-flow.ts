@@ -61,10 +61,10 @@ const ratePrompt = ai.definePrompt({
   tools: [getExchangeRate],
   prompt: `You are an exchange rate provider. Your only task is to use the getExchangeRate tool to find the exchange rate between the two currencies provided.
 
+If you are given the result of a tool call, output that result. Otherwise, call the tool.
+
 From: {{{from}}}
 To: {{{to}}}
-
-Do not output anything other than the tool call.
 `,
 });
 
@@ -79,6 +79,12 @@ const convertCurrencyFlow = ai.defineFlow(
 
     const rate = response.toolRequest('getExchangeRate')?.output;
     if (rate === undefined) {
+      // If the tool wasn't called, maybe the model returned the text directly
+      const directRate = parseFloat(response.text);
+      if (!isNaN(directRate)) {
+         const convertedAmount = input.amount * directRate;
+         return { convertedAmount };
+      }
       throw new Error('The model did not return an exchange rate.');
     }
 
