@@ -78,7 +78,7 @@ const convertCurrencyFlow = ai.defineFlow(
     const response = await ratePrompt(input);
 
     const rate = response.toolRequest('getExchangeRate')?.output;
-    if (!rate) {
+    if (rate === undefined) {
       throw new Error('The model did not return an exchange rate.');
     }
 
