@@ -45,7 +45,7 @@ const getExchangeRate = ai.defineTool(
     if (input.from === input.to) {
       return 1;
     }
-    return Math.random() * 2;
+    return Math.random() * 2 + 0.5; // Ensure a more realistic-looking rate
   }
 );
 
@@ -56,24 +56,15 @@ export async function convertCurrency(
   return convertCurrencyFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'convertCurrencyPrompt',
-  input: { schema: ConvertCurrencyInputSchema },
-  output: { schema: ConvertCurrencyOutputSchema },
+const ratePrompt = ai.definePrompt({
+  name: 'getRatePrompt',
   tools: [getExchangeRate],
-  prompt: `You are a currency converter. Your task is to convert the given amount from the source currency to the target currency.
+  prompt: `You are an exchange rate provider. Your only task is to use the getExchangeRate tool to find the exchange rate between the two currencies provided.
 
-You MUST use the 'getExchangeRate' tool to obtain the exchange rate. Do not try to guess or use your own knowledge.
-
-1. Call the 'getExchangeRate' tool with the 'from' and 'to' currencies.
-2. Take the returned exchange rate and multiply it by the 'amount' to get the converted amount.
-3. Return the result in the 'convertedAmount' field.
-
-Amount: {{{amount}}}
 From: {{{from}}}
 To: {{{to}}}
 
-Respond with only a valid JSON document conforming to the schema.
+Do not output anything other than the tool call.
 `,
 });
 
@@ -84,7 +75,16 @@ const convertCurrencyFlow = ai.defineFlow(
     outputSchema: ConvertCurrencyOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+    const response = await ratePrompt(input);
+
+    const toolResponse = response.toolCalls('getExchangeRate');
+    if (!toolResponse.length) {
+      throw new Error('The model did not return an exchange rate.');
+    }
+    const rate = toolResponse[0].output;
+
+    const convertedAmount = input.amount * rate;
+
+    return { convertedAmount };
   }
 );
