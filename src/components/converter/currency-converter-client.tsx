@@ -128,7 +128,7 @@ export default function CurrencyConverterClient() {
                               <Combobox
                                 options={currencyOptions}
                                 value={field.value}
-                                onChange={field.onChange}
+                                onChange={(value) => field.onChange(value)}
                                 placeholder="Select currency..."
                                 searchPlaceholder="Search currency..."
                               />
@@ -158,7 +158,7 @@ export default function CurrencyConverterClient() {
                               <Combobox
                                 options={currencyOptions}
                                 value={field.value}
-                                onChange={field.onChange}
+                                onChange={(value) => field.onChange(value)}
                                 placeholder="Select currency..."
                                 searchPlaceholder="Search currency..."
                               />
@@ -192,11 +192,11 @@ export default function CurrencyConverterClient() {
                   </Form>
 
                   {conversionResult && (
-                    <div className="mt-6 text-center">
-                      <p className="text-muted-foreground">
-                        {formatCurrency(form.getValues('amount'), form.getValues('from'))} is
+                    <div className="mt-8 rounded-lg border bg-card text-card-foreground p-6 text-center shadow-sm">
+                      <p className="text-sm text-muted-foreground">
+                        {formatCurrency(form.getValues('amount'), form.getValues('from'))} is equal to
                       </p>
-                      <p className="text-3xl font-bold">
+                      <p className="text-3xl font-bold text-primary">
                         {formatCurrency(conversionResult.amount, conversionResult.currency)}
                       </p>
                     </div>
